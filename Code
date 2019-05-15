@@ -1,0 +1,161 @@
+// Simple autonomus car routine
+
+#define R_PWM 10
+#define L_PWM 9
+#define L_FWD 8
+#define L_REV 7
+#define R_FWD 5
+#define R_REV 4
+#define TRIG 3
+#define ECHO 2
+#define GRN_LED 13
+#define RED_LED 12
+
+// Flag that tells the move_str method if the car
+// is moving already or not. 
+bool Moving = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(R_PWM, OUTPUT);
+  pinMode(L_PWM, OUTPUT);
+  pinMode(L_REV, OUTPUT);
+  pinMode(L_FWD, OUTPUT);
+  pinMode(R_REV, OUTPUT);
+  pinMode(R_FWD, OUTPUT);
+  pinMode(GRN_LED, OUTPUT);
+  pinMode(RED_LED, OUTPUT);
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  digitalWrite(R_REV, LOW);
+  digitalWrite(R_FWD, LOW);
+  digitalWrite(L_FWD, LOW);
+  digitalWrite(L_REV, LOW);
+
+  analogWrite(R_PWM, LOW);
+  analogWrite(L_PWM, LOW);
+  
+}
+
+void loop() {
+  float new_ping = ping();
+  if(new_ping > 15){
+    /*This if statement runs if the HC-SR04 US sensor doesn't 
+    * detect an obstacle within 15 inches
+    */
+    digitalWrite(GRN_LED, HIGH);
+    digitalWrite(RED_LED, LOW);
+    
+    move_str("Forward");
+  }
+  else{
+    digitalWrite(GRN_LED, LOW);
+    digitalWrite(RED_LED, HIGH);
+    /* Stops the car, then reverses the car.
+     * The car then turns to the right and continues the loop
+     * restarts
+     */
+    Serial.println(new_ping);
+    Serial.println("Stopping");
+    deccel();
+    Serial.println("Reversing");
+    delay(500);
+    move_str("Reverse");
+    delay(500);
+    deccel();
+    Serial.println("Turning");
+    turn_right();
+    delay(500);
+  }
+  
+}
+
+/* Accelerates the car if stopped in either the forward or backward directions
+ * as specified by the string 'direct'. If the car is already moving it simply
+ * holds the motor controller inputs high.
+*/
+void move_str(String direct){
+    Serial.print("Moving ");
+    Serial.println(direct);
+    if(direct == "Forward"){
+      digitalWrite(L_REV, LOW);
+      digitalWrite(R_REV, LOW);
+      digitalWrite(L_FWD, HIGH);
+      digitalWrite(R_FWD, HIGH); 
+    }
+    else{
+      digitalWrite(L_FWD, LOW);
+      digitalWrite(R_FWD, LOW);
+      digitalWrite(L_REV, HIGH);
+      digitalWrite(R_REV, HIGH);       
+    }
+    if(Moving == false){
+      for(int i = 55; i < 190; i+=4){
+        analogWrite(L_PWM, i);
+        analogWrite(R_PWM, i);
+        delay(20);
+       }
+      Moving = true;
+    }
+}
+
+// This function decellerates both sides from maximum speed to stop for both forward and reverse directions
+void deccel(){
+  for(int i = 190; i > 55; i-=5){
+    analogWrite(L_PWM, i);
+    analogWrite(R_PWM, i);
+    delay(20);
+  }
+  digitalWrite(L_FWD, LOW);
+  digitalWrite(R_FWD, LOW);
+  digitalWrite(L_REV, LOW);
+  digitalWrite(R_REV, LOW);
+
+  Moving = false;
+}
+
+// Turns the car right ~90 degrees
+void turn_left(){
+  digitalWrite(L_FWD, LOW);
+  digitalWrite(R_REV, LOW);
+  digitalWrite(R_FWD, HIGH);
+  digitalWrite(L_REV, HIGH);
+  analogWrite(L_PWM, 200);
+  analogWrite(R_PWM, 200);
+  delay(550);
+  digitalWrite(R_FWD, LOW);
+  digitalWrite(L_REV, LOW);
+  analogWrite(L_PWM, 0);
+  analogWrite(R_PWM, 0);
+}
+
+// Turns the car left ~90 degrees
+void turn_right(){
+  digitalWrite(L_REV, LOW);
+  digitalWrite(R_FWD, LOW);
+  digitalWrite(R_REV, HIGH);
+  digitalWrite(L_FWD, HIGH);
+  analogWrite(L_PWM, 200);
+  analogWrite(R_PWM, 200);
+  delay(520);
+  digitalWrite(R_REV, LOW);
+  digitalWrite(L_FWD, LOW);
+  analogWrite(L_PWM, 0);
+  analogWrite(R_PWM, 0);
+}
+
+// Sends and recives an ultrasonic pulse from the HC-SR04 sensor
+// Returns the distance to an obstacle in inches
+float ping(){
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  float duration = pulseIn(ECHO, HIGH)/2;
+  float distance = duration*.0135;
+
+  return distance;
+}
