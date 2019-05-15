@@ -1,13 +1,28 @@
-// Simple autonomus car routine
+/* Simple autonomus car routine
+ * Parts list: Arduino Uno x 1
+               Arduino UBS cable x 1
+               AA battery x 6
+               Toggle switch x 1
+               L298N Motor Driver x 1
+               4 motor car chassis x 1
+               Red led x 1
+               Green led x 1
+               220 ohm resistor x 2
+*/
 
+// Motor Controller pins
 #define R_PWM 10
 #define L_PWM 9
 #define L_FWD 8
 #define L_REV 7
 #define R_FWD 5
 #define R_REV 4
+
+// Ultrasonic Sensor pins
 #define TRIG 3
 #define ECHO 2
+
+// LED pins
 #define GRN_LED 13
 #define RED_LED 12
 
