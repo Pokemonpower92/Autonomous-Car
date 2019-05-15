@@ -160,7 +160,7 @@ void turn_right(){
   analogWrite(R_PWM, 0);
 }
 
-// Sends and recives an ultrasonic pulse from the HC-SR04 sensor
+// Sends and receives an ultrasonic pulse from the HC-SR04 sensor
 // Returns the distance to an obstacle in inches
 float ping(){
   digitalWrite(TRIG, LOW);
