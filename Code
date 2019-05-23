@@ -1,4 +1,4 @@
-/* Simple autonomus car routine
+/* Autonomus car routine
  * Parts list: Arduino Uno x 1
                Arduino UBS cable x 1
                AA battery x 6
@@ -27,7 +27,7 @@
 #define RED_LED 12
 
 // Flag that tells the move_str method if the car
-// is moving already or not. 
+// is already moving. 
 bool Moving = false;
 
 void setup() {
@@ -57,8 +57,8 @@ void loop() {
   float new_ping = ping();
   if(new_ping > 15){
     /*This if statement runs if the HC-SR04 US sensor doesn't 
-    * detect an obstacle within 15 inches
-    */
+     * detect an obstacle within 15 inches
+     */
     digitalWrite(GRN_LED, HIGH);
     digitalWrite(RED_LED, LOW);
     
@@ -67,9 +67,9 @@ void loop() {
   else{
     digitalWrite(GRN_LED, LOW);
     digitalWrite(RED_LED, HIGH);
-    /* Stops the car, then reverses the car.
-     * The car then turns to the right and continues the loop
-     * restarts
+    /* If the sensor detects an obstacle the car decellerates and stops
+     * The car then reverses and turns right.
+     * The loop restarts
      */
     Serial.println(new_ping);
     Serial.println("Stopping");
@@ -89,7 +89,7 @@ void loop() {
 /* Accelerates the car if stopped in either the forward or backward directions
  * as specified by the string 'direct'. If the car is already moving it simply
  * holds the motor controller inputs high.
-*/
+ */
 void move_str(String direct){
     Serial.print("Moving ");
     Serial.println(direct);
