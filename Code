@@ -130,7 +130,7 @@ void deccel(){
   Moving = false;
 }
 
-// Turns the car right ~90 degrees
+// Turns the car left ~90 degrees
 void turn_left(){
   digitalWrite(L_FWD, LOW);
   digitalWrite(R_REV, LOW);
@@ -145,7 +145,7 @@ void turn_left(){
   analogWrite(R_PWM, 0);
 }
 
-// Turns the car left ~90 degrees
+// Turns the car right ~90 degrees
 void turn_right(){
   digitalWrite(L_REV, LOW);
   digitalWrite(R_FWD, LOW);
